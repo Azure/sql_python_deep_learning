@@ -87,3 +87,7 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+#project
+lung_cancer/connection_settings.py
+

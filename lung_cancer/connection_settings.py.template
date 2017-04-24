@@ -1,0 +1,31 @@
+# Server constants 
+DB_DRIVER = 'ODBC Driver 13 for SQL Server'
+SERVER_NAME = 'XXXXXXXXXXXXXXX'
+PORT_NUMBER = '1443'
+DATABASE_NAME = 'lung_cancer'
+USERID = 'XXXXXXXXXXXXXXX'
+PASSWORD = 'XXXXXXXXXXXXXXX'
+
+#Tables
+TABLE_SCAN_IMAGES = 'dbo.scan_images'
+TABLE_LABELS = 'dbo.labels'
+TABLE_FEATURES = 'dbo.features'
+TABLE_MODEL = 'dbo.model'
+TABLE_GIF = 'dbo.gif_url'
+NUMBER_PATIENTS = 1595
+
+#STORE PROCEDURES
+SP_SCORE = 'dbo.PredictLungCancer'
+
+
+#Functions
+def get_connection_string():
+	driver = 'DRIVER={' + DB_DRIVER + '}'
+	port = 'PORT=' + PORT_NUMBER
+	server = 'SERVER=' + SERVER_NAME 
+	database = 'DATABASE=' + DATABASE_NAME
+	uid = 'UID=' + USERID 
+	pwd = 'PWD=' + PASSWORD
+	connection_string = ';'.join([driver,server,port,database,uid,pwd])
+	return connection_string
+
