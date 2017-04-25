@@ -14,6 +14,7 @@ import pkg_resources
 from lightgbm.sklearn import LGBMRegressor
 import cv2
 import cntk
+import lung_cancer
 
 
 print("*********************************************************************************************")
@@ -27,6 +28,7 @@ version_cntk = pkg_resources.get_distribution("cntk").version
 print("Version CNTK: {}".format(version_cntk))
 version_lightgbm = pkg_resources.get_distribution("lightgbm").version
 print("Version LightGBM: {}".format(version_lightgbm))
+print("Version Lung Cancer: {}".format(lung_cancer.VERSION))
 
 print("*********************************************************************************************")
 

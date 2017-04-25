@@ -42,7 +42,7 @@ Finally, make sure that SQL python loads cntk correctly:
 
 1) Clone LightGBM repo
 
-	git clone https://github.com/microsoft/lightgbm
+		git clone https://github.com/microsoft/lightgbm
 
 2) Open `./windows/LightGBM.sln` in Visual Studio
 
@@ -52,23 +52,30 @@ Finally, make sure that SQL python loads cntk correctly:
 
 5) Install the python biddings, for that we need to execute `python setup.py install` inside the LightGBM python directory but pointing the SQL python directory.
 
-	cd C:\lightgbm\python-package\
-	"C:\Program Files\Microsoft SQL Server\YOUR-MSSQL-SERVER-INSTANCE-FOLDER\PYTHON_SERVICES\python.exe" setup.py install
+		cd C:\lightgbm\python-package\
+		"C:\Program Files\Microsoft SQL Server\YOUR-MSSQL-SERVER-INSTANCE-FOLDER\PYTHON_SERVICES\python.exe" setup.py install
 
 6) Make sure that lightgbm is loaded correctly
 
-	cd C:\Program Files\Microsoft SQL Server\YOUR-MSSQL-SERVER-INSTANCE-FOLDER\PYTHON_SERVICES
-	python.exe -c "import lightgbm"
+		cd C:\Program Files\Microsoft SQL Server\YOUR-MSSQL-SERVER-INSTANCE-FOLDER\PYTHON_SERVICES
+		python.exe -c "import lightgbm"
 
 #### Install the rest of the libraries needed to run the the demo
 The next step is to install several libraries that we need to run the demo. First you need to install OpenCV:
 
-	cd C:\Program Files\Microsoft SQL Server\YOUR-MSSQL-SERVER-INSTANCE-FOLDER\PYTHON_SERVICES\Scripts
-	conda.exe install -c https://conda.binstar.org/conda-forge opencv -y
+		cd C:\Program Files\Microsoft SQL Server\YOUR-MSSQL-SERVER-INSTANCE-FOLDER\PYTHON_SERVICES\Scripts
+		conda.exe install -c https://conda.binstar.org/conda-forge opencv -y
 
 Finally, you need to install the libraries available in the `requirements.txt`. For that you have execute SQL `pip` inside the directory where you downloaded this repo. So, in a terminal write:
 
 	"C:\Program Files\Microsoft SQL Server\YOUR-MSSQL-SERVER-INSTANCE-FOLDER\PYTHON_SERVICES\Scripts\pip.exe" install -r requirements.txt
+
+#### Install lung cancer detection libraries
+The last step is to install the lung cancer libraries. You have to go to the folder where you donwloaded the libraries and execute from there:
+
+	cd PATH-TO-SQL-PYTHON-DEEP-LEARNING-REPO
+	"C:\Program Files\Microsoft SQL Server\YOUR-MSSQL-SERVER-INSTANCE-FOLDER\PYTHON_SERVICES\python.exe" setup.py install
+
 
 #### Test that everything works correctly
 Once everything was installed, we have to make sure that all libraries can be loaded from SQL. To test it, execute the file [sql_python_load_libs.sql](sql/sql_python_load_libs.sql). You should see the following:
@@ -81,6 +88,8 @@ C:\PROGRA~1\MICROS~1\MSSQL1~1.MSS\MSSQL\EXTENS~1\MSSQLSERVER01\DD9AFD48-A1BB-49C
 Version pandas: 0.18.1
 Version OpenCV: 3.1.0
 Version CNTK: 2.0.beta12.0
+Version LightGBM: 0.1
+Version Lung Cancer: 0.1
 *********************************************************************************************
 ```
 
