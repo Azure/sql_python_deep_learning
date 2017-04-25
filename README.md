@@ -71,7 +71,7 @@ Finally, you need to install the libraries available in the `requirements.txt`. 
 	"C:\Program Files\Microsoft SQL Server\YOUR-MSSQL-SERVER-INSTANCE-FOLDER\PYTHON_SERVICES\Scripts\pip.exe" install -r requirements.txt
 
 #### Install lung cancer detection libraries
-The last step is to install the lung cancer libraries. You have to go to the folder where you donwloaded the libraries and execute from there:
+The last step is to install the lung cancer libraries. You have to go to the folder where you donwloaded the libraries and fill up the file [connection_settings.py](lung_cancer/connection_settings.py.template) with your credentials. Another way to add the credentials is using environmnet variables. In this case we use a file embedded in the library because it's easier with the SQL python system. Once the credentials are changed, execute from there:
 
 	cd PATH-TO-SQL-PYTHON-DEEP-LEARNING-REPO
 	"C:\Program Files\Microsoft SQL Server\YOUR-MSSQL-SERVER-INSTANCE-FOLDER\PYTHON_SERVICES\python.exe" setup.py install
