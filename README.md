@@ -42,7 +42,7 @@ We are going to upload the images to SQL. The reason for doing this, instead of 
 
 The first step is to create in SQL Server a database called `lung_cancer_database`. 
 
-The next step is to create a table for the images and upload them. For that you have to execute the script [insert_scan_images_in_sql_database.py](preprocessing/insert_scan_images_in_sql_database.py). In case you want to upload the full dataset, just uncomment `STAGE1_LABELS = os.path.join(DATA_PATH, 'stage1_labels.csv')`. 
+The next step is to create a table for the images and upload them. First you need to put the correct paths in the file [config_preprocessing.py](preprocessing/config_preprocessing.py.template). In case you want to upload the full dataset, just uncomment `STAGE1_LABELS = os.path.join(DATA_PATH, 'stage1_labels.csv')`. To import the images to the SQL database you have to execute the script [insert_scan_images_in_sql_database.py](preprocessing/insert_scan_images_in_sql_database.py). 
 
 
 

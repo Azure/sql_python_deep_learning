@@ -39,9 +39,8 @@ def create_table_model(table_name, cursor, connector, drop_table=False):
     connector.commit()
 
 
-def get_patients_id():
-    with open(PATIENT_ID_FILE, 'r') as f:
-        patient_ids = [l.rstrip() for l in f]
+def get_patients_id(df):
+    patient_ids = df['id'].tolist()
     return patient_ids
 
 
@@ -114,12 +113,12 @@ if __name__ == "__main__":
     create_table_model(TABLE_MODEL, cur, conn, True)
 
     #Insert gifs
-    patient_ids = get_patients_id()
+    df = pd.read_csv(STAGE1_LABELS)
+    patient_ids = get_patients_id(df)
     gif_urls = generate_gif_url(patient_ids)
     insert_gifs(TABLE_GIF, cur, conn, patient_ids, gif_urls)
 
     # Insert labels
-    df = pd.read_csv(STAGE1_LABELS)
     insert_labels(TABLE_LABELS, cur, conn, df)
 
     # Insert CNTK models
