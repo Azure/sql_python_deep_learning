@@ -6,13 +6,7 @@ import pickle
 from lung_cancer.connection_settings import get_connection_string, TABLE_GIF, TABLE_LABELS, TABLE_MODEL
 import wget
 import datetime
-
-
-DATA_PATH = os.path.join('..','data')
-PATIENT_ID_FILE = os.path.join(DATA_PATH, 'patient_id.txt')
-BASE_URL = 'https://migonzastorage.blob.core.windows.net/projects/data_science_bowl_2017/gif/'
-STAGE1_LABELS = os.path.join(DATA_PATH,"stage1_labels.csv")
-LIB_CNTK = 'cntk'
+from config_preprocessing import STAGE1_LABELS, LIB_CNTK
 
 
 def create_table_gifs(table_name, cursor, connector, drop_table=False):
@@ -46,8 +40,8 @@ def create_table_model(table_name, cursor, connector, drop_table=False):
 
 
 def get_patients_id():
-	with open(PATIENT_ID_FILE, 'r') as f:
-    	patient_ids = [l.rstrip() for l in f]
+    with open(PATIENT_ID_FILE, 'r') as f:
+        patient_ids = [l.rstrip() for l in f]
     return patient_ids
 
 
@@ -57,17 +51,17 @@ def generate_gif_url(patient_ids):
 
 
 def insert_gifs(table_name, cursor, connector, patient_ids, gif_urls):
-	query = "INSERT INTO " + table_name + "( patient_id, gif_url ) VALUES (?,?)"
-	for p,g in zip(patient_id, gif_url):
-		cursor.execute(q, p, g)
-	connector.commit()
+    query = "INSERT INTO " + table_name + "( patient_id, gif_url ) VALUES (?,?)"
+    for p,g in zip(patient_id, gif_url):
+        cursor.execute(q, p, g)
+    connector.commit()
 
 
 def insert_labels(table_name, cursor, connector, df):
-	query = "INSERT INTO " + table_name + "( patient_id, label ) VALUES (?,?)"
-	for idx, row in df.iterrows():
-		cur.execute(q, row["id"], row["cancer"])
-	conn.commit()
+    query = "INSERT INTO " + table_name + "( patient_id, label ) VALUES (?,?)"
+    for idx, row in df.iterrows():
+        cur.execute(q, row["id"], row["cancer"])
+    conn.commit()
 
 
 def maybe_download_model(filename='ResNet_18.model'):
@@ -102,38 +96,38 @@ def generate_insert_query_model(table_name):
 
 
 def insert_model(table_name, cursor, connector, models):
-	q_insert = generate_insert_query_model(table_name)
-	for i, m in enumerate(models):
-		cursor.execute(q_insert, m, datetime.datetime.now(), LIB_CNTK, models_bin[i])
-		connector.commit()
+    q_insert = generate_insert_query_model(table_name)
+    for i, m in enumerate(models):
+        cursor.execute(q_insert, m, datetime.datetime.now(), LIB_CNTK, models_bin[i])
+        connector.commit()
 
 
 if __name__ == "__main__":
 
-	#Create SQL database connection and table
-	connection_string = get_connection_string()
-	conn = pyodbc.connect(connection_string)
-	cur = conn.cursor()
-	print("Creating tables {}, {}, {}".format(TABLE_GIF, TABLE_LABELS, TABLE_MODEL))
-	create_table_gifs(TABLE_GIF, cur, conn, True)
-	create_table_labels(TABLE_LABELS, cur, conn, True)	
-	create_table_model(TABLE_MODEL, cur, conn, True)
+    #Create SQL database connection and table
+    connection_string = get_connection_string()
+    conn = pyodbc.connect(connection_string)
+    cur = conn.cursor()
+    print("Creating tables {}, {}, {}".format(TABLE_GIF, TABLE_LABELS, TABLE_MODEL))
+    create_table_gifs(TABLE_GIF, cur, conn, True)
+    create_table_labels(TABLE_LABELS, cur, conn, True)    
+    create_table_model(TABLE_MODEL, cur, conn, True)
 
-	#Insert gifs
-	patient_ids = get_patients_id()
-	gif_urls = generate_gif_url(patient_ids)
-	insert_gifs(TABLE_GIF, cur, conn, patient_ids, gif_urls)
+    #Insert gifs
+    patient_ids = get_patients_id()
+    gif_urls = generate_gif_url(patient_ids)
+    insert_gifs(TABLE_GIF, cur, conn, patient_ids, gif_urls)
 
-	# Insert labels
-	df = pd.read_csv(STAGE1_LABELS)
-	insert_labels(TABLE_LABELS, cur, conn, df)
+    # Insert labels
+    df = pd.read_csv(STAGE1_LABELS)
+    insert_labels(TABLE_LABELS, cur, conn, df)
 
-	# Insert CNTK models
-	models = ('ResNet_18.model', 'ResNet_152.model')
-	for m in models:
-		maybe_download_model(m)
-	models_bin = [read_binary(m) for m in models]
-	insert_model(TABLE_MODEL, cur, conn, models_bin)
+    # Insert CNTK models
+    models = ('ResNet_18.model', 'ResNet_152.model')
+    for m in models:
+        maybe_download_model(m)
+    models_bin = [read_binary(m) for m in models]
+    insert_model(TABLE_MODEL, cur, conn, models_bin)
 
 
 

@@ -4,13 +4,8 @@ import dicom
 import pyodbc
 import pickle
 import glob
-from connection_settings import get_connection_string, TABLE_SCAN_IMAGES
-
-
-# Path and variables
-os.path.join('..','data')
-STAGE1_LABELS = os.path.join(DATA_PATH, 'stage1_labels.csv')
-STAGE1_FOLDER = os.path.join(DATA_PATH, 'stage1')
+from lung_cancer.connection_settings import get_connection_string, TABLE_SCAN_IMAGES
+from config_preprocessing import STAGE1_LABELS, STAGE1_FOLDER
 
 
 def create_table_scan_images(table_name, cursor, connector, drop_table=False):
@@ -27,7 +22,7 @@ def create_table_scan_images(table_name, cursor, connector, drop_table=False):
     )
     """ 
     cursor.execute(query)
-	connector.commit()
+    connector.commit()
 
 
 def get_3d_data(path):
@@ -56,23 +51,23 @@ def generate_insert_query(table_name):
 
 if __name__ == "__main__":
 
-	#Create SQL database connection and table
-	connection_string = get_connection_string()
-	conn = pyodbc.connect(connection_string)
-	cur = conn.cursor()
-	print("Creating table {}".format(TABLE_SCAN_IMAGES))
-	create_table_scan_images(TABLE_SCAN_IMAGES, cur, conn, True)
+    #Create SQL database connection and table
+    connection_string = get_connection_string()
+    conn = pyodbc.connect(connection_string)
+    cur = conn.cursor()
+    print("Creating table {}".format(TABLE_SCAN_IMAGES))
+    create_table_scan_images(TABLE_SCAN_IMAGES, cur, conn, True)
 
-	#Insert all patient images
-	print("Inserting all patient images in the database")
-	q_insert = generate_insert_query(TABLE_SCAN_IMAGES)
-	for i, folder in enumerate(glob.glob(os.path.join(STAGE1_FOLDER, '*'))):
-	    foldername = os.path.basename(folder)
-	    print("Inserting patient #{} with id: {}".format(i, foldername))
-	    batch = get_image_batch(folder)
-	    batch_serial = pickle.dumps(batch, protocol=0)
-	    cur.execute(q_insert, foldername, batch.shape[0], batch.shape[1], batch.shape[2], batch_serial)
-	    conn.commit()
+    #Insert all patient images
+    print("Inserting all patient images in the database")
+    q_insert = generate_insert_query(TABLE_SCAN_IMAGES)
+    for i, folder in enumerate(glob.glob(os.path.join(STAGE1_FOLDER, '*'))):
+        foldername = os.path.basename(folder)
+        print("Inserting patient #{} with id: {}".format(i, foldername))
+        batch = get_image_batch(folder)
+        batch_serial = pickle.dumps(batch, protocol=0)
+        cur.execute(q_insert, foldername, batch.shape[0], batch.shape[1], batch.shape[2], batch_serial)
+        conn.commit()
 
-	print("Images inserted")
-	conn.close()
+    print("Images inserted")
+    conn.close()

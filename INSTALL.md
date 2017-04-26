@@ -32,10 +32,12 @@ The version we will install is CNTK with GPU 1-bit SGD in python 3.5. In a termi
 	cd "C:\Program Files\Microsoft SQL Server\YOUR-MSSQL-SERVER-INSTANCE-FOLDER\PYTHON_SERVICES\Scripts"
 	pip.exe install https://cntk.ai/PythonWheel/GPU-1bit-SGD/cntk-2.0.beta12.0-cp35-cp35m-win_amd64.whl
 
-Finally, make sure that SQL python loads cntk correctly:
+Then, make sure that SQL python loads cntk correctly:
 
 	cd "C:\Program Files\Microsoft SQL Server\YOUR-MSSQL-SERVER-INSTANCE-FOLDER\PYTHON_SERVICES"
 	python.exe -c "import cntk"
+
+You need to change the user and password in SQL Server. For that you have to execute the file `change_auth.sql` (changing the variables user and password).
 
 #### Install LightGBM
 

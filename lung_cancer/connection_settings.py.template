@@ -2,7 +2,7 @@
 DB_DRIVER = 'ODBC Driver 13 for SQL Server'
 SERVER_NAME = 'XXXXXXXXXXXXXXX'
 PORT_NUMBER = '1443'
-DATABASE_NAME = 'lung_cancer'
+DATABASE_NAME = 'lung_cancer_database'
 USERID = 'XXXXXXXXXXXXXXX'
 PASSWORD = 'XXXXXXXXXXXXXXX'
 
@@ -12,11 +12,6 @@ TABLE_LABELS = 'dbo.labels'
 TABLE_FEATURES = 'dbo.features'
 TABLE_MODEL = 'dbo.model'
 TABLE_GIF = 'dbo.gif_url'
-NUMBER_PATIENTS = 1595
-
-#STORE PROCEDURES
-SP_SCORE = 'dbo.PredictLungCancer'
-
 
 #Functions
 def get_connection_string():
