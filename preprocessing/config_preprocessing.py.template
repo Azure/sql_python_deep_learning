@@ -2,6 +2,7 @@ import os
 
 # Path and variables
 LIB_CNTK = 'cntk'
+BASE_URL = 'https://migonzastorage.blob.core.windows.net/projects/data_science_bowl_2017/gif/' 
 DATA_PATH = os.path.join('..','data')
 #STAGE1_LABELS = os.path.join(DATA_PATH, 'stage1_labels.csv') #uncomment this file if you want to use the full dataset
 STAGE1_LABELS = os.path.join(DATA_PATH, 'stage1_labels_partial.csv')

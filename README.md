@@ -31,7 +31,7 @@ The installation process can be found [here](INSTALL.md).
 
 ### Preprocessing
 
-We have to donwload the data from [kaggle dataset](https://www.kaggle.com/c/data-science-bowl-2017/data). The images are in [DICOM format](https://en.wikipedia.org/wiki/DICOM) and consist of a group of slices of the thorax of each patient as it is shown in the following figure:
+We have to download the data from [kaggle dataset](https://www.kaggle.com/c/data-science-bowl-2017/data). The images are in [DICOM format](https://en.wikipedia.org/wiki/DICOM) and consist of a group of slices of the thorax of each patient as it is shown in the following figure:
 
 <p align="center">
 	<img src="https://msdnshared.blob.core.windows.net/media/2017/02/021717_1842_QuickStartG2.png" alt="lung cancer scans" width="30%"/>
@@ -42,9 +42,9 @@ We are going to upload the images to SQL. The reason for doing this, instead of 
 
 The first step is to create in SQL Server a database called `lung_cancer_database`. 
 
-The next step is to create a table for the images and upload them. First you need to put the correct paths in the file [config_preprocessing.py](preprocessing/config_preprocessing.py.template). In case you want to upload the full dataset, just uncomment `STAGE1_LABELS = os.path.join(DATA_PATH, 'stage1_labels.csv')`. To import the images to the SQL database you have to execute the script [insert_scan_images_in_sql_database.py](preprocessing/insert_scan_images_in_sql_database.py). 
+The next step is to create a table for the images and upload them. First you need to put the correct paths in the file [config_preprocessing.py](preprocessing/config_preprocessing.py.template). In case you want to upload the full dataset, just uncomment `STAGE1_LABELS = os.path.join(DATA_PATH, 'stage1_labels.csv')`. To import the images to the SQL database you have to execute the script [insert_scan_images_in_sql_database.py](preprocessing/insert_scan_images_in_sql_database.py). This will take a while.
 
-
+In the mean time, execute the script [insert_other_items_in_sql_database.py](preprocessing/insert_other_items_in_sql_database.py). This script creates and fill tables for the labels, the CNN model and a gif representation of the images. 
 
 ### Contributing
 

@@ -4,6 +4,7 @@ import dicom
 import pyodbc
 import pickle
 import glob
+import pandas as pd
 from lung_cancer.connection_settings import get_connection_string, TABLE_SCAN_IMAGES
 from config_preprocessing import STAGE1_LABELS, STAGE1_FOLDER
 
@@ -59,14 +60,15 @@ if __name__ == "__main__":
     create_table_scan_images(TABLE_SCAN_IMAGES, cur, conn, True)
 
     #Insert all patient images
-    print("Inserting all patient images in the database")
+    df = pd.read_csv(STAGE1_LABELS)
+    print("Inserting {} patient images in the database".format(df.shape[0]))
     q_insert = generate_insert_query(TABLE_SCAN_IMAGES)
-    for i, folder in enumerate(glob.glob(os.path.join(STAGE1_FOLDER, '*'))):
-        foldername = os.path.basename(folder)
-        print("Inserting patient #{} with id: {}".format(i, foldername))
+    for i, patient_id in enumerate(df['id'].tolist()):
+        folder = os.path.join(STAGE1_FOLDER, patient_id)
+        print("Inserting patient #{} with id: {}".format(i, patient_id))
         batch = get_image_batch(folder)
         batch_serial = pickle.dumps(batch, protocol=0)
-        cur.execute(q_insert, foldername, batch.shape[0], batch.shape[1], batch.shape[2], batch_serial)
+        cur.execute(q_insert, patient_id, batch.shape[0], batch.shape[1], batch.shape[2], batch_serial)
         conn.commit()
 
     print("Images inserted")
