@@ -2,18 +2,16 @@
 
 This file explains how to install SQL Server with python and all the needing libraries to run the lung cancer demo.
 
-#### Installation of python in SQL Server
+#### Python with SQL Server Community Technical Preview
 
-The first step is to download the content of the folder `\\nsosnovbigbox\sqldrops\2017-03-29\1\retail\SQLFULL_ENU`. There you will find the python installer `sqlpython.cmd`. Alternatively, you can download the files from this [storage](https://migonzastorage.blob.core.windows.net/installer/SQL_Server/2017_04_04_SQLFULL_ENU.zip).
+The first step is to download [SQL Server 2017 CTP](https://www.microsoft.com/en-us/evalcenter/evaluate-sql-server-2017-ctp/). One of the most important features of the version is that it has built-in Python and R integration. It comes with Anaconda 4.2.0 (64-bit) with Python 3.5. 
 
-Execute `setup.exe` and follow the steps of installation. Install all the packages. In specify free edition, select developer. In the Windows DSVM (as of April 2017) you will need to update [java JRE](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html) to be able to install PolyBase.
-
-Make sure that you have the `revoscalepy` is working. To test it go to the installation folder and look for `python.exe` inside `PYTHON_SERVICES` folder.
+To test that python is working correctly, make sure that the library `revoscalepy` can be loaded. To test it, go to the installation folder and look for `python.exe` inside `PYTHON_SERVICES` folder.
 
 	cd "C:\Program Files\Microsoft SQL Server\YOUR-MSSQL-SERVER-INSTANCE-FOLDER\PYTHON_SERVICES"
-	python.exe -m "import revoscalepy"
+	python.exe -c "import revoscalepy"
 
-Make sure that python runs inside SQL Server correctly. For that open SQL Server and connect to your database engine. You need to enable external scripts. For that, press `New Query` and execute: 
+Make sure that python runs inside SQL Server correctly. For that, open SQL Server and connect to your database engine. You need to enable external scripts. For that, press `New Query` and execute: 
 
 	Exec sp_configure 'external scripts enabled', 1
 	Reconfigure with override
@@ -22,15 +20,14 @@ Then you need to restart SQL Server. Right click on the server and then restart.
 
 Finally, to test that everything works correctly you have to execute the file [sqlpytest.sql](sql/sqlpytest.sql).
 
-
 #### Install CNTK with SQL
 
-We are going to install CNTK version 2.0beta12 and only the python biddings directly from the wheels. The information for the last CNTK version can be found [here](https://github.com/Microsoft/CNTK/wiki/Setup-Windows-Python).
+We are going to install [CNTK version 2.0RC2](https://github.com/Microsoft/CNTK/releases/tag/v2.0.rc2) and only the python biddings directly from the wheels. The information for the last CNTK version can be found [here](https://github.com/Microsoft/CNTK/wiki/Setup-Windows-Python).
 
 The version we will install is CNTK with GPU 1-bit SGD in python 3.5. In a terminal, install the python wheels:
 
 	cd "C:\Program Files\Microsoft SQL Server\YOUR-MSSQL-SERVER-INSTANCE-FOLDER\PYTHON_SERVICES\Scripts"
-	pip.exe install https://cntk.ai/PythonWheel/GPU-1bit-SGD/cntk-2.0.beta12.0-cp35-cp35m-win_amd64.whl
+	pip.exe install https://cntk.ai/PythonWheel/GPU-1bit-SGD/cntk-2.0rc2-cp35-cp35m-win_amd64.whl
 
 Then, make sure that SQL python loads cntk correctly:
 
@@ -88,7 +85,7 @@ Once everything was installed, we have to make sure that all libraries can be lo
 C:\PROGRA~1\MICROS~1\MSSQL1~1.MSS\MSSQL\EXTENS~1\MSSQLSERVER01\DD9AFD48-A1BB-49C4-9574-DF93B7A8AFFD
 Version pandas: 0.18.1
 Version OpenCV: 3.1.0
-Version CNTK: 2.0.beta12.0
+Version CNTK: 2.0.rc2
 Version LightGBM: 0.1
 Version Lung Cancer: 0.1
 *********************************************************************************************
