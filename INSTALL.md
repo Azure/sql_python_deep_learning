@@ -11,6 +11,8 @@ To test that python is working correctly, make sure that the library `revoscalep
 	cd "C:\Program Files\Microsoft SQL Server\YOUR-MSSQL-SERVER-INSTANCE-FOLDER\PYTHON_SERVICES"
 	python.exe -c "import revoscalepy"
 
+You have to add this folder (`C:\Program Files\Microsoft SQL Server\YOUR-MSSQL-SERVER-INSTANCE-FOLDER\PYTHON_SERVICES`) to the windows path. 
+
 Make sure that python runs inside SQL Server correctly. For that, open SQL Server and connect to your database engine. You need to enable external scripts. For that, press `New Query` and execute: 
 
 	Exec sp_configure 'external scripts enabled', 1
