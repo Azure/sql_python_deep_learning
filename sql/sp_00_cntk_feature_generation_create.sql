@@ -1,4 +1,4 @@
-USE [lung_cancer]
+USE [lung_cancer_database]
 GO
 
 
@@ -26,12 +26,8 @@ import sys
 import pyodbc
 
 from lung_cancer.lung_cancer_utils import get_patients_id, get_patient_images, manipulate_images, compute_features_with_gpu, create_table_features, insert_features, get_cntk_model_sql, get_cntk_model
-from lung_cancer.connection_settings import get_connection_string, TABLE_SCAN_IMAGES, TABLE_LABELS, TABLE_FEATURES, TABLE_MODEL
+from lung_cancer.connection_settings import get_connection_string, TABLE_SCAN_IMAGES, TABLE_LABELS, TABLE_FEATURES, TABLE_MODEL, BATCH_SIZE, MODEL_NAME
 from cntk.device import set_default_device, gpu
-
-# Variables
-BATCH_SIZE = 120
-MODEL_NAME = "ResNet_152.model"
 
 # Connect to SQL Server
 connection_string = get_connection_string()
@@ -43,19 +39,14 @@ print(row[0])
 
 create_table_features(TABLE_FEATURES, cur)
 
-
 print("Starting routine")
-
-
 #---------------------------------------------------------------
 #--------  IMAGE FEATURIZATION WITH CNTK MODEL IN GPU  ---------
 #---------------------------------------------------------------
 set_default_device(gpu(0))
 
 patients = get_patients_id(TABLE_SCAN_IMAGES, cur)
-
-#net = get_cntk_model_sql(TABLE_MODEL, cur, MODEL_NAME)
-net = get_cntk_model(MODEL_NAME)
+net = get_cntk_model_sql(TABLE_MODEL, cur, MODEL_NAME)
 
 for i, p in enumerate(patients):
 	print("Computing patient #{}: {}".format(i,p))
@@ -71,8 +62,6 @@ for i, p in enumerate(patients):
 #---------------------------------------------------------------
 #--------  IMAGE FEATURIZATION WITH CNTK MODEL IN GPU  ---------
 #---------------------------------------------------------------
-
-
 conn.close()
 print("Routine finished")
 

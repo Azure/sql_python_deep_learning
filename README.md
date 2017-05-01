@@ -46,6 +46,39 @@ The next step is to create a table for the images and upload them. First you nee
 
 In the mean time, execute the script [insert_other_items_in_sql_database.py](preprocessing/insert_other_items_in_sql_database.py). This script creates and fill tables for the labels, the CNN model and a gif representation of the images. 
 
+### Process 1: Featurization of Lung Scans with CNN in a GPU
+
+The initial process generates features from the scans using a pretrained ResNet. In the SQL stored procedure [sp_00_cntk_feature_generation_create.sql](sql/sp_00_cntk_feature_generation_create.sql), the code can be found. To create the store procedure you just need to execute the SQL file in SQL Server Management Studio. This will create a new stored procedure under `lung_cancer_database/Programmability/Stored Procedures` called `dbo.GenerateFeatures`.
+
+The main routine is super simple and consists of 8 lines of code. All the functions associated with the script can be found in [lung_cancer_utils.py](lung_cancer/lung_cancer_utils.py).
+
+```python
+set_default_device(gpu(0))
+patients = get_patients_id(TABLE_SCAN_IMAGES, cur)
+net = get_cntk_model_sql(TABLE_MODEL, cur, MODEL_NAME)
+
+for i, p in enumerate(patients):
+	scans = get_patient_images(TABLE_SCAN_IMAGES, cur, p)
+	scans = manipulate_images(scans)
+	feats = compute_features_with_gpu(net, scans, BATCH_SIZE)
+	insert_features(TABLE_FEATURES, cur, conn, p, feats)
+```
+
+Let's explain each line one by one: 
+- The instruction `set_default_device(gpu(0))` defines the GPU the system uses. This is in fact superfluous because CNTK automatically selects the best option the current system provides, if the system has a GPU it will use it, if not, it will use the CPU. 
+- The instruction `patients = get_patients_id(TABLE_SCAN_IMAGES, cur)` gets a list of the patients ids.
+- The model is retrieved from SQL in this line `net = get_cntk_model_sql(TABLE_MODEL, cur, MODEL_NAME)`.
+- The next step is to loop for each patient. The first step is to query the images of the patient using this instruction: `scans = get_patient_images(TABLE_SCAN_IMAGES, cur, p)`.
+- Then there is a manipulation of the scans `scans = manipulate_images(scans)`. It consists of a size reduction, image equalization and packing of the scans in groups of 3 to match the input size of the pretrained CNN.
+- The next line `feats = compute_features_with_gpu(net, scans, BATCH_SIZE)` makes the pretrained CNN `net` to compute the features. This is where the forward propagation happens and is the slowest point in the algorithm. That is why we use a GPU to speed up the process.
+- Finally, the computed features are inserted in a SQL table in the last instruction `insert_features(TABLE_FEATURES, cur, conn, p, feats)`.
+
+To execute this stored procedure just create a new query in SQL Server Manager Studio and type:
+
+	EXECUTE lung_cancer.dbo.GenerateFeatures;
+
+This algorithm takes around 1h in a GPU DSVM. If instead of a machine with a GPU we choose to use a machine with a CPU, this same process can take up to 32h.
+
 ### Contributing
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.

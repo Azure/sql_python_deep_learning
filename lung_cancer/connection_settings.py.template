@@ -24,3 +24,7 @@ def get_connection_string():
 	connection_string = ';'.join([driver,server,port,database,uid,pwd])
 	return connection_string
 
+# Variables
+BATCH_SIZE = 120
+MODEL_NAME = "ResNet_152.model"
+

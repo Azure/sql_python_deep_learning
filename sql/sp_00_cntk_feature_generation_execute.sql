@@ -1,2 +1,2 @@
-EXECUTE lung_cancer.dbo.GenerateFeatures;
+EXECUTE lung_cancer_database.dbo.GenerateFeatures;
 

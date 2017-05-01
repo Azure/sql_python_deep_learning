@@ -74,7 +74,7 @@ def get_cntk_model_sql(table_name, cursor, model_name):
     query = "SELECT  model FROM " + table_name + " WHERE name = ?"
     cursor.execute(query, model_name)
     result = cursor.fetchone()
-    model_bin  = pickle.loads(result[0])
+    model_bin  = result[0]
     model_file = "tmp.model"
     with open(model_file, "wb") as file:
         file.write(model_bin)
