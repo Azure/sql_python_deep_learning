@@ -127,7 +127,17 @@ To execute this stored procedure you have to makes this query, which takes 2s:
 DECLARE @PredictionResultSP FLOAT;
 EXECUTE lung_cancer_database.dbo.PredictLungCancer @PatientIndex = 0, @PredictionResult = @PredictionResultSP;
 ```
-The variable `@PredictionResultSP` is the output of the stored procedure and `@PatientIndex = 0` is the input. If we use the small dataset, the maximum input is 200, in case we use the full dataset, the maximum input is 1595.
+The variable `@PredictionResultSP` is the output of the stored procedure and `@PatientIndex = 0` is the input. If we use the small dataset, the maximum input is 200, in case we use the full dataset, the maximum input is 1594.
+
+## Lung Cancer Detection Web Service
+
+We created a demo web app to show the lung cancer detection in SQL python. To run it, you just need to execute [api_service.py](web_app/api_service.py)
+
+The web page can be accessed at `http://localhost:5000`. 
+
+In case you want to access it from outside you have to open the port 5000 in the Azure portal (Network Interfaces/Network security group/Inbound security rules). You need to do the same in the Firewall inside the virtual machine (Windows Firewall with Advanced Security/Inbound rules). To access the web service from outside just replace `localhost` with the DNS of the VM.
+
+You can try to search a patient called Anthony or another call Ana. You can also search for patients by ID entering a number between 0 and 200 (1594 if you use the full dataset).
 
 ### Contributing
 
