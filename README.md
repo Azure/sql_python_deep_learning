@@ -55,7 +55,7 @@ The main routine is super simple and consists of 8 lines of code. All the functi
 ```python
 set_default_device(gpu(0))
 patients = get_patients_id(TABLE_SCAN_IMAGES, cur)
-net = get_cntk_model_sql(TABLE_MODEL, cur, MODEL_NAME)
+net = get_cntk_model_sql(TABLE_MODEL, cur, CNTK_MODEL_NAME)
 
 for i, p in enumerate(patients):
 	scans = get_patient_images(TABLE_SCAN_IMAGES, cur, p)
@@ -80,6 +80,26 @@ To execute this stored procedure just create a new query in SQL Server Manager S
 This algorithm takes around 1h in a GPU DSVM. If instead of a machine with a GPU we choose to use a machine with a CPU, this same process can take up to 32h.
 
 To test that the GPU is actually executing the process, you can type in a terminal `nvidia-smi`.
+
+### Process 2: Training of Scan Features with Boosted Tree 
+
+Once the features are computed and inserted in the SQL table, we use them to train a boosted tree using LightGBM library. The code that computes this process is [sp_01_lightgbm_training_create.sql](sql/sp_01_lightgbm_training_create.sql) and generates a stored procedure called `dbo.TrainLungCancerModel`.
+
+In this case the main code occupies 4 lines of code:
+
+```python
+patients_train = get_patients_id(TABLE_LABELS, cur)
+trn_x, val_x, trn_y, val_y = generate_set(TABLE_FEATURES, TABLE_LABELS, patients_train, cur)
+classifier = train_lightgbm(trn_x, val_x, trn_y, val_y)
+insert_model(TABLE_MODEL, cur, conn, classifier, LIGHTGBM_MODEL_NAME)
+```
+Let's explain again each line:
+- As before, we retrieve the list of patients ids `patients_train = get_patients_id(TABLE_LABELS, cur)`. However, this time instead of retrieving all the patients, we are just going to use the training subset, which is the one that has labels.
+- The next line `trn_x, val_x, trn_y, val_y = generate_set(TABLE_FEATURES, TABLE_LABELS, patients_train, cur)` generates the training and validation set.
+- Next, we compute the classifier in `classifier = train_lightgbm(trn_x, val_x, trn_y, val_y)`.
+- Finally, we insert the trained model in a SQL table using `insert_model(TABLE_MODEL, cur, conn, classifier, LIGHTGBM_MODEL_NAME)`.
+
+This process takes around 1 min in a DSVM.
 
 ### Contributing
 

@@ -26,7 +26,7 @@ import sys
 import pyodbc
 
 from lung_cancer.lung_cancer_utils import get_patients_id, get_patient_images, manipulate_images, compute_features_with_gpu, create_table_features, insert_features, get_cntk_model_sql, get_cntk_model
-from lung_cancer.connection_settings import get_connection_string, TABLE_SCAN_IMAGES, TABLE_LABELS, TABLE_FEATURES, TABLE_MODEL, BATCH_SIZE, MODEL_NAME
+from lung_cancer.connection_settings import get_connection_string, TABLE_SCAN_IMAGES, TABLE_LABELS, TABLE_FEATURES, TABLE_MODEL, BATCH_SIZE, CNTK_MODEL_NAME
 from cntk.device import set_default_device, gpu
 
 # Connect to SQL Server
@@ -46,7 +46,7 @@ print("Starting routine")
 set_default_device(gpu(0))
 
 patients = get_patients_id(TABLE_SCAN_IMAGES, cur)
-net = get_cntk_model_sql(TABLE_MODEL, cur, MODEL_NAME)
+net = get_cntk_model_sql(TABLE_MODEL, cur, CNTK_MODEL_NAME)
 
 for i, p in enumerate(patients):
 	print("Computing patient #{}: {}".format(i,p))

@@ -25,7 +25,7 @@ BEGIN
 import sys
 import pyodbc
 from lung_cancer.lung_cancer_utils import get_patients_id, generate_set, train_lightgbm, insert_model
-from lung_cancer.connection_settings import get_connection_string, TABLE_SCAN_IMAGES, TABLE_LABELS, TABLE_FEATURES, TABLE_MODEL
+from lung_cancer.connection_settings import get_connection_string, TABLE_SCAN_IMAGES, TABLE_LABELS, TABLE_FEATURES, TABLE_MODEL, LIGHTGBM_MODEL_NAME
 
 # Connect to SQL Server
 connection_string = get_connection_string()
@@ -36,7 +36,6 @@ row = cur.fetchone()
 print(row[0])
 
 print("Starting routine")
-MODEL_NAME = "ligthgbm_exp09_sql_sp"
 
 
 #---------------------------------------------------------------
@@ -48,7 +47,7 @@ trn_x, val_x, trn_y, val_y = generate_set(TABLE_FEATURES, TABLE_LABELS, patients
 
 classifier = train_lightgbm(trn_x, val_x, trn_y, val_y)
 
-insert_model(TABLE_MODEL, cur, conn, classifier, MODEL_NAME)
+insert_model(TABLE_MODEL, cur, conn, classifier, LIGHTGBM_MODEL_NAME)
 #---------------------------------------------------------------
 #-----  BOOSTED TREE TRAINED ON FEATURES WITH LIGHTGBM   -------
 #---------------------------------------------------------------
