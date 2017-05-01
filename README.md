@@ -101,6 +101,34 @@ Let's explain again each line:
 
 This process takes around 1 min in a DSVM.
 
+### Process 3: Scoring with the Trained Classifier
+
+The final process is the operationalization routine. The boosted tree can be used to compute the probability of a new patient of having cancer. The script is [sp_02_lightgbm_scoring_create.sql](sql/sp_02_lightgbm_scoring_create.sql) and generates a stored procedure called `PredictLungCancer`. This can connected to a web app via an API.
+
+The main code has 5 lines:
+
+```python 
+patient_id_query = get_patient_id_from_index(TABLE_SCAN_IMAGES, cur, PatientIndex)
+feats = get_features(TABLE_FEATURES, cur, patient_id_query)
+model = get_lightgbm_model(TABLE_MODEL, cur, LIGHTGBM_MODEL_NAME)
+probability_cancer = prediction(model, feats)
+PredictionResult = float(probability_cancer)*100
+``` 
+In this case there is an input and output for the python routine from SQL. The input is `PatientIndex` which is the index of the patient we want to analyze. The output is `PredictionResult`, which is the probability of this patient of having cancer. Here the explanation of the code:
+- The first line `patient_id_query = get_patient_id_from_index(TABLE_SCAN_IMAGES, cur, PatientIndex)` gets the patient id from the index looking it in SQL table.
+- Given the id, the instruction `feats = get_features(TABLE_FEATURES, cur, patient_id_query)` retrieves the features. 
+- The following line `model = get_ligthgbm_model(TABLE_MODEL, cur, LIGHTGBM_MODEL_NAME)` retrieves the most recent model.
+- Next, using the model and the features, the line `probability_cancer = prediction(model, feats)` computes the probability of having cancer. 
+- Finally in `PredictionResult = float(probability_cancer)*100` the probability is transformed in a percentage.
+
+To execute this stored procedure you have to makes this query, which takes 2s:
+
+```sql
+DECLARE @PredictionResultSP FLOAT;
+EXECUTE lung_cancer_database.dbo.PredictLungCancer @PatientIndex = 0, @PredictionResult = @PredictionResultSP;
+```
+The variable `@PredictionResultSP` is the output of the stored procedure and `@PatientIndex = 0` is the input. If we use the small dataset, the maximum input is 200, in case we use the full dataset, the maximum input is 1595.
+
 ### Contributing
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.

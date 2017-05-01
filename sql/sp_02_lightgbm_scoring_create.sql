@@ -24,8 +24,8 @@ BEGIN
 	SET @predictScript = N'
 import sys
 import pyodbc
-from lung_cancer.lung_cancer_utils import get_patients_id, get_patient_id_from_index, get_features, get_ligthgbm_model, prediction
-from lung_cancer.connection_settings import get_connection_string, TABLE_SCAN_IMAGES, TABLE_LABELS, TABLE_FEATURES, TABLE_MODEL
+from lung_cancer.lung_cancer_utils import get_patients_id, get_patient_id_from_index, get_features, get_lightgbm_model, prediction
+from lung_cancer.connection_settings import get_connection_string, TABLE_SCAN_IMAGES, TABLE_LABELS, TABLE_FEATURES, TABLE_MODEL, LIGHTGBM_MODEL_NAME
 
 # Connect to SQL Server
 connection_string = get_connection_string()
@@ -37,7 +37,6 @@ print(row[0])
 
 #Main routine
 print("Starting routine")
-MODEL_NAME = "ligthgbm_exp09_sql_sp"
 
 #---------------------------------------------------------------
 #-------------  SCORING OF A REQUESTED PATIENT  ----------------
@@ -46,7 +45,7 @@ patient_id_query = get_patient_id_from_index(TABLE_SCAN_IMAGES, cur, PatientInde
 
 feats = get_features(TABLE_FEATURES, cur, patient_id_query)
 
-model = get_ligthgbm_model(TABLE_MODEL, cur, MODEL_NAME)
+model = get_lightgbm_model(TABLE_MODEL, cur, LIGHTGBM_MODEL_NAME)
 
 probability_cancer = prediction(model, feats)
 

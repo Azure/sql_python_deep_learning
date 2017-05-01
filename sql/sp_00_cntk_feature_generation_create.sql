@@ -24,7 +24,6 @@ BEGIN
 	SET @predictScript = N'
 import sys
 import pyodbc
-
 from lung_cancer.lung_cancer_utils import get_patients_id, get_patient_images, manipulate_images, compute_features_with_gpu, create_table_features, insert_features, get_cntk_model_sql, get_cntk_model
 from lung_cancer.connection_settings import get_connection_string, TABLE_SCAN_IMAGES, TABLE_LABELS, TABLE_FEATURES, TABLE_MODEL, BATCH_SIZE, CNTK_MODEL_NAME
 from cntk.device import set_default_device, gpu

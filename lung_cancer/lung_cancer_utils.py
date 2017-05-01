@@ -177,7 +177,7 @@ def get_patient_id_from_index(table_name, cursor, patient_index):
 	return patients[patient_index]
 
 
-def get_ligthgbm_model(table_name, cursor, model_name):
+def get_lightgbm_model(table_name, cursor, model_name):
     query = "SELECT TOP(1) model FROM " + table_name + " WHERE name = ? ORDER BY date DESC"
     cursor.execute(query, model_name)
     result = cursor.fetchone()
