@@ -1,5 +1,5 @@
 
-USE [lung_cancer]
+USE [lung_cancer_database]
 GO
 SET ANSI_NULLS ON
 GO

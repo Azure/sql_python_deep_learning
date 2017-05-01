@@ -1,1 +1,1 @@
-EXECUTE lung_cancer.dbo.TrainLungCancerModel;
+EXECUTE lung_cancer_database.dbo.TrainLungCancerModel;

@@ -79,6 +79,8 @@ To execute this stored procedure just create a new query in SQL Server Manager S
 
 This algorithm takes around 1h in a GPU DSVM. If instead of a machine with a GPU we choose to use a machine with a CPU, this same process can take up to 32h.
 
+To test that the GPU is actually executing the process, you can type in a terminal `nvidia-smi`.
+
 ### Contributing
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.

@@ -1,8 +1,7 @@
-__title__ = ''
+__title__ = 'SQL Python for Deep Learning'
 __version__ = '0.1'
-__author__ = ''
+__author__ = 'Miguel Gonzalez-Fierro'
 __license__ = 'MIT license'
-__copyright__ = ''
 
 # Synonym
 VERSION = __version__
