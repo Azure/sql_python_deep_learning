@@ -139,6 +139,17 @@ In case you want to access it from outside you have to open the port 5000 in the
 
 You can try to search a patient called Anthony or another call Ana. You can also search for patients by ID entering a number between 0 and 200 (1594 if you use the full dataset).
 
+### Disclaimer
+
+The idea of the lung cancer demo is to showcase that a deep learning algorithm can be computed with GPU inside SQL in python. 
+
+The accuracy of the actual algorithm is low. It has a very simple pipeline. This algorithm was created as a baseline for the [lung cancer kaggle competition](https://blogs.technet.microsoft.com/machinelearning/2017/02/17/quick-start-guide-to-the-data-science-bowl-lung-cancer-detection-challenge-using-deep-learning-microsoft-cognitive-toolkit-and-azure-gpu-vms/), to allow users to quickly set up a DSVM and execute a CNTK algorithm. 
+
+An example of an algorithm with higher accuracy can be found [here](https://eliasvansteenkiste.github.io/machine learning/lung-cancer-pred/), the pipeline has a 3D CNN for nodule segmentation, one CNN for false positive reduction, another CNN for identifying if the nodule is malignant or not, then transfer learning and finally ensembling.  
+
+It is important to understand that the focus of the demo is not the algorithm itself, but the pipeline that allows to execute deep learning in a SQL database.
+
+
 ### Contributing
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
