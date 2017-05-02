@@ -26,6 +26,7 @@ def get_connection_string():
 
 # Variables
 BATCH_SIZE = 120
+NUMBER_PATIENTS = 200#1595
 CNTK_MODEL_NAME = "ResNet_152.model"
 LIGHTGBM_MODEL_NAME = "ligthgbm_sql"
 

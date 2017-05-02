@@ -1,8 +1,8 @@
 from api import app, BAD_PARAM, STATUS_OK, BAD_REQUEST
 from flask import request, jsonify, abort, make_response,render_template, json 
 import sys
-from lung_cancer.connection_settings import get_connection_string, SP_SCORE, TABLE_SCAN_IMAGES, TABLE_GIF, TABLE_MODEL, TABLE_FEATURES, NUMBER_PATIENTS
-from lung_cancer.lung_cancer_utils import get_patients_id, get_patient_id_from_index, select_entry_where_column_equals_value, get_features, get_ligthgbm_model, prediction
+from lung_cancer.connection_settings import get_connection_string, TABLE_SCAN_IMAGES, TABLE_GIF, TABLE_MODEL, TABLE_FEATURES, LIGHTGBM_MODEL_NAME, DATABASE_NAME,NUMBER_PATIENTS
+from lung_cancer.lung_cancer_utils import get_patients_id, get_patient_id_from_index, select_entry_where_column_equals_value, get_features, get_lightgbm_model, prediction
 import pyodbc
 import cherrypy
 from paste.translogger import TransLogger
@@ -37,8 +37,7 @@ cur = conn.cursor()
 
 
 # Model
-model_name = 'ligthgbm_exp09_sql_sp'
-model = get_ligthgbm_model(TABLE_MODEL, cur, model_name)
+model = get_lightgbm_model(TABLE_MODEL, cur, LIGHTGBM_MODEL_NAME)
 
 
 # Functions
@@ -99,12 +98,12 @@ def manage_request_patient_index(patient_request):
     if patient_request.lower() in patient1:
         patient_index = 1
     elif patient_request.lower() in patient2:
-        patient_index = 1574
+        patient_index = 175#1574
     else: 
         if is_integer(patient_request):
             patient_index = int(patient_request)
             if patient_index > NUMBER_PATIENTS:
-                patient_index = 1500   
+                patient_index = 199#1500   
         else:
             patient_index = 7
     return patient_index
@@ -129,7 +128,7 @@ def manage_prediction(patient_index):
 
 def manage_prediction_store_procedure(patient_index):
     query = "DECLARE @PredictionResultSP FLOAT;"
-    query += "EXECUTE dbo.PredictLungCancer @PatientIndex = ?, @PredictionResult = @PredictionResultSP;"
+    query += "EXECUTE " + DATABASE_NAME + ".dbo.PredictLungCancer @PatientIndex = ?, @PredictionResult = @PredictionResultSP;"
     cur.execute(query, patient_index)
     prob = cur.fetchone()[0]
     return prob

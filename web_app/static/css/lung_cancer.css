@@ -147,12 +147,12 @@ margin-right: 10px;
 }
 
 .patient-scan{
-margin-left: 950px;
-margin-top: 30px;
-width: 450px;
-height: 850px;
-position: absolute;
-border-radius: 5px;
+  margin-left: 950px;
+  margin-top: 30px;
+  width: 450px;
+  height: 650px;
+  position: absolute;
+  border-radius: 5px;
   background-color: #010101;
   box-shadow: 0 0 24px 0 rgba(0, 0, 0, 0.04);
   border: solid 1px #f2f2f2;
@@ -177,7 +177,7 @@ border:none;
 
 .analyze-button{
 margin-left: 950px;
-margin-top: 920px;
+margin-top: 720px;
 width: 450px;
 height: 115px;
 position: absolute;
@@ -203,7 +203,7 @@ border-radius: 5px;
 .cancer-result{
 width: 450px;
 height: 140px;
-margin-top: 280px;
+margin-top: 80px;
 background-color: #ff9600;
   text-align: center;
 border-radius: 5px;
@@ -233,8 +233,6 @@ background-color: #ff9600;
 	background-color: #ff9600;
 
 }
-
-
 .top-banner{
   height: 100px;
   width: 100%
