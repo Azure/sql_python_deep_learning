@@ -128,5 +128,5 @@ if __name__ == "__main__":
     models_bin = [read_binary(m) for m in models]
     insert_model(TABLE_MODEL, cur, conn, models, models_bin)
 
-
+    conn.close()
 
