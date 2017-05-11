@@ -8,6 +8,7 @@ PASSWORD = 'XXXXXXXXXXXXXXX'
 
 #Tables
 TABLE_SCAN_IMAGES = 'dbo.scan_images'
+TABLE_PATIENTS = 'dbo.patients'
 TABLE_LABELS = 'dbo.labels'
 TABLE_FEATURES = 'dbo.features'
 TABLE_MODEL = 'dbo.model'

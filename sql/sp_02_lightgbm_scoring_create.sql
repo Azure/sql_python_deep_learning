@@ -12,13 +12,15 @@ GO
 
 CREATE PROCEDURE [dbo].[PredictLungCancer] 
 @PatientIndex INT,
+@ModelName VARCHAR(50),
 @PredictionResult FLOAT OUTPUT
 AS
 BEGIN
 	-- SET NOCOUNT ON added to prevent extra result sets from
 	-- interfering with SELECT statements.
 	SET NOCOUNT ON;
-
+	DECLARE @Model VARBINARY(MAX) = (SELECT TOP(1) model from dbo.model where name = @ModelName ORDER BY date DESC);
+	DECLARE @ModelNeck VARBINARY(MAX) = (SELECT model from dbo.model where name = @NameNeck);
     -- Insert statements for procedure here
 	DECLARE @predictScript NVARCHAR(MAX);
 	SET @predictScript = N'
