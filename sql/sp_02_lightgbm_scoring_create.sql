@@ -28,28 +28,17 @@ BEGIN
 	SET @predictScript = N'
 import sys
 import pickle
-from lung_cancer.lung_cancer_utils import get_patients_id, get_patient_id_from_index, get_features, get_lightgbm_model, prediction
-from lung_cancer.connection_settings import get_connection_string, TABLE_SCAN_IMAGES, TABLE_LABELS, TABLE_FEATURES, TABLE_MODEL, LIGHTGBM_MODEL_NAME
+from lung_cancer.lung_cancer_utils import  prediction
 
-
-#Main routine
-print("Starting routine")
-
-#---------------------------------------------------------------
-#-------------  SCORING OF A REQUESTED PATIENT  ----------------
-#---------------------------------------------------------------
-
+#Deserialize variables
 loaded_model = pickle.loads(Model)
 feats = pickle.loads(Features)
 
+#Prediction
 probability_cancer = prediction(loaded_model, feats)
-
 PredictionResult = float(probability_cancer)*100
 print("The probability of cancer for patient {} is {}%".format(PatientIndex, PredictionResult))
-#---------------------------------------------------------------
-#-------------  SCORING OF A REQUESTED PATIENT  ----------------
-#---------------------------------------------------------------
-print("Routine finished")
+
 	'
 	EXECUTE sp_execute_external_script
 	@language = N'python',
