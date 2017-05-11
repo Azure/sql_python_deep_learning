@@ -20,22 +20,17 @@ BEGIN
 	-- interfering with SELECT statements.
 	SET NOCOUNT ON;
 	DECLARE @Model VARBINARY(MAX) = (SELECT TOP(1) model from dbo.model where name = @ModelName ORDER BY date DESC);
-	DECLARE @ModelNeck VARBINARY(MAX) = (SELECT model from dbo.model where name = @NameNeck);
+	DECLARE @Features VARBINARY(MAX) = (SELECT array FROM dbo.features AS t1 
+										INNER JOIN dbo.patients AS t2 ON t1.patient_id = t2.patient_id 
+										WHERE t2.idx = @PatientIndex);
     -- Insert statements for procedure here
 	DECLARE @predictScript NVARCHAR(MAX);
 	SET @predictScript = N'
 import sys
-import pyodbc
+import pickle
 from lung_cancer.lung_cancer_utils import get_patients_id, get_patient_id_from_index, get_features, get_lightgbm_model, prediction
 from lung_cancer.connection_settings import get_connection_string, TABLE_SCAN_IMAGES, TABLE_LABELS, TABLE_FEATURES, TABLE_MODEL, LIGHTGBM_MODEL_NAME
 
-# Connect to SQL Server
-connection_string = get_connection_string()
-conn = pyodbc.connect(connection_string)
-cur = conn.cursor()
-cur.execute("SELECT @@VERSION")
-row = cur.fetchone()
-print(row[0])
 
 #Main routine
 print("Starting routine")
@@ -43,31 +38,30 @@ print("Starting routine")
 #---------------------------------------------------------------
 #-------------  SCORING OF A REQUESTED PATIENT  ----------------
 #---------------------------------------------------------------
-patient_id_query = get_patient_id_from_index(TABLE_SCAN_IMAGES, cur, PatientIndex)
 
-feats = get_features(TABLE_FEATURES, cur, patient_id_query)
+loaded_model = pickle.loads(Model)
+feats = pickle.loads(Features)
 
-model = get_lightgbm_model(TABLE_MODEL, cur, LIGHTGBM_MODEL_NAME)
-
-probability_cancer = prediction(model, feats)
+probability_cancer = prediction(loaded_model, feats)
 
 PredictionResult = float(probability_cancer)*100
-print("The probability of cancer for patient {} is {}%".format(patient_id_query, PredictionResult))
+print("The probability of cancer for patient {} is {}%".format(PatientIndex, PredictionResult))
 #---------------------------------------------------------------
 #-------------  SCORING OF A REQUESTED PATIENT  ----------------
 #---------------------------------------------------------------
-conn.close()
 print("Routine finished")
 	'
 	EXECUTE sp_execute_external_script
 	@language = N'python',
 	@script = @predictScript,
-	@params = N'@PatientIndex INT, @PredictionResult FLOAT OUTPUT',
+	@params = N'@PatientIndex INT, @ModelName VARCHAR(50), @Model VARBINARY(MAX), @Features VARBINARY(MAX), @PredictionResult FLOAT OUTPUT',
 	@PatientIndex = @PatientIndex,
+	@ModelName = @ModelName,
+	@Model = @Model,
+	@Features = @Features,
 	@PredictionResult = @PredictionResult OUTPUT;
 
 	PRINT 'Probability for having cancer (%):'
-	PRINT @PredictionResult
 	SELECT @PredictionResult
 END
 GO
