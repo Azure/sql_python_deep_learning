@@ -62,6 +62,24 @@ def manipulate_images(sample_image):
     return batch
 
 
+def select_model_layer(model, layer_name):
+    node_in_graph = model.find_by_name(layer_name)
+    output_nodes  = combine([node_in_graph.owner])
+    return output_nodes
+
+
+def load_cntk_model_from_binary(model_bin, verbose=False):
+    model_file = "tmp.model"
+    with open(model_file, "wb") as file:
+        file.write(model_bin)
+    loaded_model = load_model(model_file)
+    if verbose:
+        print(len(loaded_model.constants))
+        node_outputs = get_node_outputs(loaded_model)
+        for out in node_outputs: print("{0} {1}".format(out.name, out.shape))
+    return loaded_model
+
+
 def get_cntk_model(model_name):
     node_name = "z.x"
     loaded_model  = load_model(model_name)
@@ -83,14 +101,15 @@ def get_cntk_model_sql(table_name, cursor, model_name):
 
 
 def compute_features_with_gpu(model, data, batch_size=50):
-    num_items = data.shape[0]
-    chunks = np.ceil(num_items / batch_size)
-    data_chunks = np.array_split(data, chunks, axis=0)
-    feat_list = []
-    for d in data_chunks:
-        feat = model.eval(d)#GPU
-        feat_list.append(feat)
-    feats = np.concatenate(feat_list, axis=0)
+    #num_items = data.shape[0]
+    #chunks = np.ceil(num_items / batch_size)
+    #data_chunks = np.array_split(data, chunks, axis=0)
+    #feat_list = []
+    #for d in data_chunks:
+    #    feat = model.eval(d)#GPU
+    #    feat_list.append(feat)
+    #feats = np.concatenate(feat_list, axis=0)
+    feats = model.eval(data)[0]
     feats = feats.squeeze()
     return feats
 
