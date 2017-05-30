@@ -91,6 +91,8 @@ ENV/
 #project
 lung_cancer/connection_settings.py
 preprocessing/config_preprocessing.py
+preprocessing/ResNet_18.model
+preprocessing/ResNet_152.model
 playground.ipynb
 tmp.model
 sql/debug.sql

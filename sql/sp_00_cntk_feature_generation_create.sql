@@ -29,15 +29,16 @@ BEGIN
 	SET @predictScript = N'
 import pickle
 import time
+from cntk import load_model
 from lung_cancer.lung_cancer_utils import manipulate_images, compute_features_with_gpu, load_cntk_model_from_binary, select_model_layer
 from lung_cancer.connection_settings import BATCH_SIZE
 
 #Debug
-verbose=False
+verbose=True
 
 #Manage inputs
 t0 = time.clock()
-model = load_cntk_model_from_binary(Model)
+model = load_model(Model)
 if verbose: print("Time: {}s".format(time.clock() - t0))
 
 t0 = time.clock()

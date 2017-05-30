@@ -85,15 +85,8 @@ def maybe_download_model(filename='ResNet_18.model'):
         print('Model %s already downloaded' % filename)
     else:
         model_name_to_url = {
-        'AlexNet.model':   'https://www.cntk.ai/Models/AlexNet/AlexNet.model',
-        'AlexNetBS.model': 'https://www.cntk.ai/Models/AlexNet/AlexNetBS.model',
-        'VGG_16.model': 'https://www.cntk.ai/Models/Caffe_Converted/VGG16_ImageNet.model',
-        'VGG_19.model': 'https://www.cntk.ai/Models/Caffe_Converted/VGG19_ImageNet.model',
-        'InceptionBN.model': 'https://www.cntk.ai/Models/Caffe_Converted/BNInception_ImageNet.model',
-        'ResNet_18.model': 'https://www.cntk.ai/Models/ResNet/ResNet_18.model',
-        'ResNet_50.model': 'https://www.cntk.ai/Models/Caffe_Converted/ResNet50_ImageNet.model',
-        'ResNet_101.model': 'https://www.cntk.ai/Models/Caffe_Converted/ResNet101_ImageNet.model',
-        'ResNet_152.model': 'https://migonzastorage.blob.core.windows.net/deep-learning/models/cntk/imagenet/ResNet_152.model'
+        'ResNet_18.model': 'http://migonzastorage.blob.core.windows.net/deep-learning/models/cntk/rc3/ResNet_18.model',
+        'ResNet_152.model': 'http://migonzastorage.blob.core.windows.net/deep-learning/models/cntk/rc3/ResNet_152.model'
         }
         url = model_name_to_url[filename] 
         wget.download(url)
@@ -149,5 +142,6 @@ if __name__ == "__main__":
     models_bin = [read_binary(m) for m in models]
     insert_model(TABLE_MODEL, cur, conn, models, models_bin)
 
+    print("Process finished")
     conn.close()
 

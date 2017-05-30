@@ -18,7 +18,8 @@ DECLARE @numrows INT;
 DECLARE @Features VARBINARY(MAX);
 SET @i = 0
 SET @numrows = (SELECT COUNT(*) FROM dbo.patients)
-WHILE (@i < @numrows)
+--WHILE (@i < @numrows)
+WHILE (@i < 1)
 BEGIN
 	EXECUTE lung_cancer_database.dbo.GenerateFeatures @PatientIndex = @i, @Model = @Model, @Features = @Features;
     SET @i = @i + 1
