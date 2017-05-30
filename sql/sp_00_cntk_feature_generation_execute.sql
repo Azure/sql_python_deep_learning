@@ -11,7 +11,7 @@ CREATE TABLE dbo.features_sp (
                 array VARBINARY(MAX) NOT NULL
 );
 
-DECLARE @Model VARBINARY(MAX) = (SELECT model FROM dbo.model WHERE name = 'ResNet_152.model');
+DECLARE @Model VARBINARY(MAX) = (SELECT TOP(1) model FROM dbo.model WHERE name = 'ResNet_152.model' ORDER BY date DESC);
 
 DECLARE @i INT;
 DECLARE @numrows INT;

@@ -30,11 +30,15 @@ BEGIN
 import pickle
 import time
 from cntk import load_model
+from cntk.device import try_set_default_device, gpu, cpu
 from lung_cancer.lung_cancer_utils import manipulate_images, compute_features_with_gpu, load_cntk_model_from_binary, select_model_layer
 from lung_cancer.connection_settings import BATCH_SIZE
 
 #Debug
 verbose=True
+#try_set_default_device(cpu())
+try_set_default_device(gpu(0))
+
 
 #Manage inputs
 t0 = time.clock()

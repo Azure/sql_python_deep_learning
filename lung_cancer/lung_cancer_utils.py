@@ -7,6 +7,7 @@ from sklearn.decomposition import PCA
 import pkg_resources
 from lightgbm.sklearn import LGBMRegressor
 import cv2
+import cntk
 from cntk import load_model
 from cntk.ops import combine
 import pickle
@@ -16,12 +17,15 @@ import datetime
 ######################################################################
 
 def print_library_version():
-	print(os.getcwd())
-	version_pandas = pkg_resources.get_distribution("pandas").version
-	print("Version pandas: {}".format(version_pandas))
-	print("Version OpenCV: {}".format(cv2.__version__))
-	version_cntk = pkg_resources.get_distribution("cntk").version
-	print("Version CNTK: {}".format(version_cntk))
+    print(os.getcwd())
+    version_pandas = pkg_resources.get_distribution("pandas").version
+    print("Version pandas: {}".format(version_pandas))
+    print("Version OpenCV: {}".format(cv2.__version__))
+    version_cntk = pkg_resources.get_distribution("cntk").version
+    print("Version CNTK: {}".format(version_cntk))
+    cntk.logging.set_trace_level(2)
+    print("Devices used by CNTK: {}".format(cntk.all_devices()))
+
 
 
 ######################################################################
@@ -58,7 +62,7 @@ def manipulate_images(sample_image):
             tmp.append(img)
 
         batch.append(tmp)
-    batch = np.array(batch, dtype='int')
+    batch = np.array(batch, dtype=np.float32)
     return batch
 
 
