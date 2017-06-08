@@ -108,8 +108,8 @@ The inputs of the SQL stored procedure are `@PatientIndex` and `@ModelName`. The
 ```sql
 DECLARE @Model VARBINARY(MAX) = (SELECT TOP(1) model from dbo.model where name = @ModelName ORDER BY date DESC);
 DECLARE @Features VARBINARY(MAX) = (SELECT TOP(1) array FROM dbo.features AS t1 
-									INNER JOIN dbo.patients AS t2 ON t1.patient_id = t2.patient_id 
-									WHERE t2.idx = @PatientIndex);
+                                    INNER JOIN dbo.patients AS t2 ON t1.patient_id = t2.patient_id 
+                                    WHERE t2.idx = @PatientIndex);
 ```  
 - The first line retrieves the last computed model `@Model` given its name. This model is serialized with pickle and it has to be deserialized to be used in python.
 - The next line obtains the features given a patient index. 
