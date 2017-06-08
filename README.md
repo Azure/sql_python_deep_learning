@@ -152,7 +152,7 @@ The idea of the lung cancer demo is to showcase that a deep learning algorithm c
 
 The accuracy of the actual algorithm is low. It has a very simple pipeline. This algorithm was created as a baseline for the [lung cancer kaggle competition](https://blogs.technet.microsoft.com/machinelearning/2017/02/17/quick-start-guide-to-the-data-science-bowl-lung-cancer-detection-challenge-using-deep-learning-microsoft-cognitive-toolkit-and-azure-gpu-vms/), to allow users to quickly set up a DSVM and execute a CNTK algorithm. 
 
-An example of an algorithm with higher accuracy can be found [here](https://eliasvansteenkiste.github.io/machine learning/lung-cancer-pred/), the pipeline has a 3D CNN for nodule segmentation, one CNN for false positive reduction, another CNN for identifying if the nodule is malignant or not, then transfer learning and finally ensembling.  
+An example of an algorithm with higher accuracy can be found [here](https://eliasvansteenkiste.github.io/machine%20learning/lung-cancer-pred/), the pipeline has a 3D CNN for nodule segmentation, one CNN for false positive reduction, another CNN for identifying if the nodule is malignant or not, then transfer learning and finally ensembling.  
 
 It is important to understand that the focus of the demo is not the algorithm itself but the pipeline which allows to execute deep learning in a SQL database.
 
