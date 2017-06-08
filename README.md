@@ -50,34 +50,32 @@ In the mean time, execute the script [insert_other_items_in_sql_database.py](pre
 
 The initial process generates features from the scans using a pretrained ResNet. In the SQL stored procedure [sp_00_cnn_feature_generation_create.sql](sql/sp_00_cnn_feature_generation_create.sql), the code can be found. To create the store procedure you just need to execute the SQL file in SQL Server Management Studio. This will create a new stored procedure under `lung_cancer_database/Programmability/Stored Procedures` called `dbo.GenerateFeatures`.
 
-The main routine is super simple and consists of 8 lines of code. All the functions associated with the script can be found in [lung_cancer_utils.py](lung_cancer/lung_cancer_utils.py).
+The main routine is super simple and consists of 9 lines of code. All the functions associated with the script can be found in [lung_cancer_utils.py](lung_cancer/lung_cancer_utils.py).
 
 ```python
-set_default_device(gpu(0))
+try_set_default_device(gpu(0))
 patients = get_patients_id(TABLE_SCAN_IMAGES, cur)
-net = get_cntk_model_sql(TABLE_MODEL, cur, CNTK_MODEL_NAME)
+model = load_model(Model)
+model = select_model_layer(model, "z.x")
 
 for i, p in enumerate(patients):
 	scans = get_patient_images(TABLE_SCAN_IMAGES, cur, p)
 	scans = manipulate_images(scans)
-	feats = compute_features_with_gpu(net, scans, BATCH_SIZE)
+	feats = compute_features_with_gpu(model, scans, BATCH_SIZE)
 	insert_features(TABLE_FEATURES, cur, conn, p, feats)
 ```
 
 Let's explain each line one by one: 
-- The instruction `set_default_device(gpu(0))` defines the GPU the system uses. This is in fact superfluous because CNTK automatically selects the best option the current system provides, if the system has a GPU it will use it, if not, it will use the CPU. 
+- The instruction `try_set_default_device(gpu(0))` defines the GPU the system uses. This is in fact superfluous because CNTK automatically selects the best option the current system provides, if the system has a GPU it will use it, if not, it will use the CPU. 
 - The instruction `patients = get_patients_id(TABLE_SCAN_IMAGES, cur)` gets a list of the patients ids.
-- The model is retrieved from SQL in this line `net = get_cntk_model_sql(TABLE_MODEL, cur, MODEL_NAME)`.
+- The model is retrieved from SQL in this line `model = load_model(Model)`. The variable `Model` is an input to the stored procedure and it is queried from SQL externally.
+- The penultimate layer of the CNN is selected to featurize the images in `model = select_model_layer(model, "z.x")`.
 - The next step is to loop for each patient. The first step is to query the images of the patient using this instruction: `scans = get_patient_images(TABLE_SCAN_IMAGES, cur, p)`.
 - Then there is a manipulation of the scans `scans = manipulate_images(scans)`. It consists of a size reduction, image equalization and packing of the scans in groups of 3 to match the input size of the pretrained CNN.
 - The next line `feats = compute_features_with_gpu(net, scans, BATCH_SIZE)` makes the pretrained CNN `net` to compute the features. This is where the forward propagation happens and is the slowest point in the algorithm. That is why we use a GPU to speed up the process.
 - Finally, the computed features are inserted in a SQL table in the last instruction `insert_features(TABLE_FEATURES, cur, conn, p, feats)`.
 
-To execute this stored procedure just create a new query in SQL Server Manager Studio and type:
-
-	EXECUTE lung_cancer.dbo.GenerateFeatures;
-
-This algorithm takes around 1h in a GPU DSVM. If instead of a machine with a GPU we choose to use a machine with a CPU, this same process can take up to 32h.
+To execute this stored procedure you have to execute the file [sp_00_cnn_feature_generation_execute.sql](sql/sp_00_cnn_feature_generation_execute.sql). This process takes around 40min in a Windows GPU DSVM. 
 
 To test that the GPU is actually executing the process, you can type in a terminal `nvidia-smi`.
 
@@ -103,25 +101,34 @@ This process takes around 1 min in a DSVM.
 
 ### Process 3: Scoring with the Trained Classifier
 
-The final process is the operationalization routine. The boosted tree can be used to compute the probability of a new patient of having cancer. The script is [sp_02_boosted_tree_scoring_create.sql](sql/sp_02_boosted_tree_scoring_create.sql) and generates a stored procedure called `PredictLungCancer`. This can connected to a web app via an API.
+The final process is the operationalization routine. The boosted tree can be used to compute the probability of a new patient of having cancer. The script is [sp_02_boosted_tree_scoring_create.sql](sql/sp_02_boosted_tree_scoring_create.sql) and generates a stored procedure called `PredictLungCancer`. This can be connected to a web app via an API.
 
-The main code has 5 lines:
+The inputs of the SQL stored procedure are `@PatientIndex` and `@ModelName`. The output is the prediction result `@PredictionResult` given a patient index and a model name. Inside the stored procedure, we get the boosted tree model and the features of the patient, which are both serialized and stored as binary variables:
+
+```sql
+DECLARE @Model VARBINARY(MAX) = (SELECT TOP(1) model from dbo.model where name = @ModelName ORDER BY date DESC);
+DECLARE @Features VARBINARY(MAX) = (SELECT TOP(1) array FROM dbo.features AS t1 
+									INNER JOIN dbo.patients AS t2 ON t1.patient_id = t2.patient_id 
+									WHERE t2.idx = @PatientIndex);
+```  
+- The first line retrieves the last computed model `@Model` given its name. This model is serialized with pickle and it has to be deserialized to be used in python.
+- The next line obtains the features given a patient index. 
+
+These two variables are sent to python as serialized objects. The main python code has 4 lines:
 
 ```python 
-patient_id_query = get_patient_id_from_index(TABLE_SCAN_IMAGES, cur, PatientIndex)
-feats = get_features(TABLE_FEATURES, cur, patient_id_query)
-model = get_lightgbm_model(TABLE_MODEL, cur, LIGHTGBM_MODEL_NAME)
+feats = pickle.loads(Features)
+model = pickle.loads(Model)
 probability_cancer = prediction(model, feats)
 PredictionResult = float(probability_cancer)*100
 ``` 
 In this case there is an input and output for the python routine from SQL. The input is `PatientIndex` which is the index of the patient we want to analyze. The output is `PredictionResult`, which is the probability of this patient of having cancer. Here the explanation of the code:
-- The first line `patient_id_query = get_patient_id_from_index(TABLE_SCAN_IMAGES, cur, PatientIndex)` gets the patient id from the index looking it in SQL table.
-- Given the id, the instruction `feats = get_features(TABLE_FEATURES, cur, patient_id_query)` retrieves the features. 
-- The following line `model = get_ligthgbm_model(TABLE_MODEL, cur, LIGHTGBM_MODEL_NAME)` retrieves the most recent model.
+- The features queried from SQL are deserialized using the instruction `feats = pickle.loads(Features)`. 
+- The same operation is performed for the boosted tree model in `model = pickle.loads(Model)`.
 - Next, using the model and the features, the line `probability_cancer = prediction(model, feats)` computes the probability of having cancer. 
 - Finally in `PredictionResult = float(probability_cancer)*100` the probability is transformed in a percentage.
 
-To execute this stored procedure you have to makes this query, which takes 2s:
+To execute this stored procedure you have to makes this query, which takes 1s:
 
 ```sql
 DECLARE @PredictionResultSP FLOAT;
@@ -135,7 +142,7 @@ We created a demo web app to show the lung cancer detection in SQL python. To ru
 
 The web page can be accessed at `http://localhost:5000`. 
 
-In case you want to access it from outside you have to open the port 5000 in the Azure portal (Network Interfaces/Network security group/Inbound security rules). You need to do the same in the Firewall inside the virtual machine (Windows Firewall with Advanced Security/Inbound rules). To access the web service from outside just replace `localhost` with the DNS of the VM.
+In case you want to access it from outside you have to open the port 5000 in the Azure portal (Network Interfaces/Network security group/Inbound security rules). You need to do the same in the Firewall inside the virtual machine (Windows Firewall with Advanced Security/Inbound rules). To access the web service from outside just replace `localhost` with the DNS or IP of the VM.
 
 You can try to search a patient called Anthony or another call Ana. You can also search for patients by ID entering a number between 0 and 200 (1594 if you use the full dataset).
 
@@ -147,7 +154,7 @@ The accuracy of the actual algorithm is low. It has a very simple pipeline. This
 
 An example of an algorithm with higher accuracy can be found [here](https://eliasvansteenkiste.github.io/machine learning/lung-cancer-pred/), the pipeline has a 3D CNN for nodule segmentation, one CNN for false positive reduction, another CNN for identifying if the nodule is malignant or not, then transfer learning and finally ensembling.  
 
-It is important to understand that the focus of the demo is not the algorithm itself, but the pipeline that allows to execute deep learning in a SQL database.
+It is important to understand that the focus of the demo is not the algorithm itself but the pipeline which allows to execute deep learning in a SQL database.
 
 
 ### Contributing

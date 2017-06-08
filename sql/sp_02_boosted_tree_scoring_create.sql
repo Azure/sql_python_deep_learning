@@ -20,7 +20,7 @@ BEGIN
 	-- interfering with SELECT statements.
 	SET NOCOUNT ON;
 	DECLARE @Model VARBINARY(MAX) = (SELECT TOP(1) model from dbo.model where name = @ModelName ORDER BY date DESC);
-	DECLARE @Features VARBINARY(MAX) = (SELECT array FROM dbo.features AS t1 
+	DECLARE @Features VARBINARY(MAX) = (SELECT TOP(1) array FROM dbo.features AS t1 
 										INNER JOIN dbo.patients AS t2 ON t1.patient_id = t2.patient_id 
 										WHERE t2.idx = @PatientIndex);
     -- Insert statements for procedure here
@@ -31,11 +31,11 @@ import pickle
 from lung_cancer.lung_cancer_utils import  prediction
 
 #Deserialize variables
-loaded_model = pickle.loads(Model)
+model = pickle.loads(Model)
 feats = pickle.loads(Features)
 
 #Prediction
-probability_cancer = prediction(loaded_model, feats)
+probability_cancer = prediction(model, feats)
 PredictionResult = float(probability_cancer)*100
 print("The probability of cancer for patient {} is {}%".format(PatientIndex, PredictionResult))
 
