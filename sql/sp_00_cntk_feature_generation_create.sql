@@ -13,73 +13,66 @@ IF OBJECT_ID('[dbo].[GenerateFeatures]', 'P') IS NOT NULL
 GO  
 
 CREATE PROCEDURE [dbo].[GenerateFeatures] 
-@PatientIndex INT,
-@Model VARBINARY(MAX),
-@Features VARBINARY(MAX) OUTPUT
+@Model VARBINARY(MAX)
 AS
 BEGIN
 	-- SET NOCOUNT ON added to prevent extra result sets from
 	-- interfering with SELECT statements.
 	SET NOCOUNT ON;
-	DECLARE @PatientScans VARBINARY(MAX) = (SELECT array FROM dbo.scan_images AS t1 
-											INNER JOIN dbo.patients AS t2 ON t1.patient_id = t2.patient_id 
-											WHERE t2.idx = @PatientIndex);
 	-- Insert statements for procedure here
 	DECLARE @predictScript NVARCHAR(MAX);
 	SET @predictScript = N'
 import pickle
 import time
+import pyodbc
 from cntk import load_model
 from cntk.device import try_set_default_device, gpu, cpu
-from lung_cancer.lung_cancer_utils import manipulate_images, compute_features_with_gpu, load_cntk_model_from_binary, select_model_layer
-from lung_cancer.connection_settings import BATCH_SIZE
+from lung_cancer.lung_cancer_utils import get_patients_id, get_patient_images, manipulate_images, select_model_layer, compute_features_with_gpu, insert_features
+from lung_cancer.connection_settings import get_connection_string, TABLE_SCAN_IMAGES, TABLE_LABELS, TABLE_FEATURES, TABLE_MODEL, BATCH_SIZE, CNTK_MODEL_NAME
 
 #Debug
 verbose=True
-#try_set_default_device(cpu())
 try_set_default_device(gpu(0))
 
+# Connect to SQL Server
+connection_string = get_connection_string()
+conn = pyodbc.connect(connection_string)
+cur = conn.cursor()
 
 #Manage inputs
 t0 = time.clock()
 model = load_model(Model)
-if verbose: print("Time: {}s".format(time.clock() - t0))
-
-t0 = time.clock()
 model = select_model_layer(model, "z.x")
-if verbose: print("Time: {}s".format(time.clock() - t0))
+if verbose: print("Time to load model: {}s".format(time.clock() - t0))
 
-t0 = time.clock()
-scans = pickle.loads(PatientScans)
-if verbose: print("Time: {}s".format(time.clock() - t0))
-print(scans.shape)
+#Get patients id
+patients = get_patients_id(TABLE_SCAN_IMAGES, cur)
 
-#Compute featurization with GPU
-t0 = time.clock()
-scans = manipulate_images(scans)
-if verbose: print("Time: {}s".format(time.clock() - t0))
+for i, p in enumerate(patients):
+	if verbose: print("Computing patient #{}: {}".format(i,p))
+	
+	t0 = time.clock()
+	scans = get_patient_images(TABLE_SCAN_IMAGES, cur, p)
+	scans = manipulate_images(scans)
+	if verbose: print("Time to get and manipulate images: {}s".format(time.clock() - t0))
+	
+	t0 = time.clock()
+	feats = compute_features_with_gpu(model, scans, BATCH_SIZE)
+	if verbose: print("Time to compute features: {}s".format(time.clock() - t0))
 
-t0 = time.clock()
-feats = compute_features_with_gpu(model, scans, BATCH_SIZE)
-if verbose: print("Time: {}s".format(time.clock() - t0))
-print(feats.shape)
+	insert_features(TABLE_FEATURES, cur, conn, p, feats)
 
-t0 = time.clock()
-Features = pickle.dumps(feats)
-if verbose: print("Time: {}s".format(time.clock() - t0))
+conn.close()
+
+print("Routine finished")
 
 	'
 
 	EXECUTE sp_execute_external_script
 	@language = N'python',
 	@script = @predictScript,
-	@params = N'@PatientIndex INT, @Model VARBINARY(MAX), @PatientScans VARBINARY(MAX), @Features VARBINARY(MAX) OUTPUT',
-	@PatientIndex = @PatientIndex,
-	@Model = @Model,
-	@PatientScans = @PatientScans,
-	@Features = @Features OUTPUT;
-	DECLARE @PatientId VARCHAR(50) = (SELECT patient_id FROM dbo.patients WHERE idx = @PatientIndex);
-	INSERT INTO dbo.features_sp (patient_id, array) VALUES(@PatientId, @Features);
+	@params = N'@Model VARBINARY(MAX)',
+	@Model = @Model;
 
 END
 GO
