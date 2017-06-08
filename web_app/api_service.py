@@ -98,12 +98,12 @@ def manage_request_patient_index(patient_request):
     if patient_request.lower() in patient1:
         patient_index = 1
     elif patient_request.lower() in patient2:
-        patient_index = 175#1574
+        patient_index = 175
     else: 
         if is_integer(patient_request):
             patient_index = int(patient_request)
             if patient_index > NUMBER_PATIENTS:
-                patient_index = 199#1500   
+                patient_index = NUMBER_PATIENTS - 1   
         else:
             patient_index = 7
     return patient_index
@@ -128,7 +128,8 @@ def manage_prediction(patient_index):
 
 def manage_prediction_store_procedure(patient_index):
     query = "DECLARE @PredictionResultSP FLOAT;"
-    query += "EXECUTE " + DATABASE_NAME + ".dbo.PredictLungCancer @PatientIndex = ?, @PredictionResult = @PredictionResultSP;"
+    query += "EXECUTE " + DATABASE_NAME + ".dbo.PredictLungCancer @PatientIndex = ?, @ModelName = " + \
+             LIGHTGBM_MODEL_NAME + ", @PredictionResult = @PredictionResultSP;"
     cur.execute(query, patient_index)
     prob = cur.fetchone()[0]
     return prob
