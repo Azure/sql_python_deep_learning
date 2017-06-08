@@ -24,17 +24,17 @@ Finally, to test that everything works correctly you have to execute the file [s
 
 #### Install CNTK with SQL
 
-We are going to install [CNTK version 2.0RC2](https://github.com/Microsoft/CNTK/releases/tag/v2.0.rc2) and only the python biddings directly from the wheels. The information for the last CNTK version can be found [here](https://github.com/Microsoft/CNTK/wiki/Setup-Windows-Python).
+We are going to install [CNTK version 2.0](https://github.com/Microsoft/CNTK/releases/tag/v2.0) and only the python biddings directly from the wheels. The information for the last CNTK version can be found [here](https://github.com/Microsoft/CNTK/wiki/Setup-Windows-Python).
 
 The version we will install is CNTK with GPU 1-bit SGD in python 3.5. In a terminal, install the python wheels:
 
 	cd "C:\Program Files\Microsoft SQL Server\YOUR-MSSQL-SERVER-INSTANCE-FOLDER\PYTHON_SERVICES\Scripts"
-	pip.exe install https://cntk.ai/PythonWheel/GPU-1bit-SGD/cntk-2.0rc2-cp35-cp35m-win_amd64.whl
+	pip.exe install https://cntk.ai/PythonWheel/GPU-1bit-SGD/cntk-2.0-cp35-cp35m-win_amd64.whl
 
 Then, make sure that SQL python loads cntk correctly:
 
 	cd "C:\Program Files\Microsoft SQL Server\YOUR-MSSQL-SERVER-INSTANCE-FOLDER\PYTHON_SERVICES"
-	python.exe -c "import cntk"
+	python.exe -c "import cntk; print(cntk.__version__)"
 
 You need to change the user and password in SQL Server. For that you have to execute the file `change_auth.sql` (changing the variables user and password).
 

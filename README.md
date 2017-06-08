@@ -48,7 +48,7 @@ In the mean time, execute the script [insert_other_items_in_sql_database.py](pre
 
 ### Process 1: Featurization of Lung Scans with CNN in a GPU
 
-The initial process generates features from the scans using a pretrained ResNet. In the SQL stored procedure [sp_00_cntk_feature_generation_create.sql](sql/sp_00_cntk_feature_generation_create.sql), the code can be found. To create the store procedure you just need to execute the SQL file in SQL Server Management Studio. This will create a new stored procedure under `lung_cancer_database/Programmability/Stored Procedures` called `dbo.GenerateFeatures`.
+The initial process generates features from the scans using a pretrained ResNet. In the SQL stored procedure [sp_00_cnn_feature_generation_create.sql](sql/sp_00_cnn_feature_generation_create.sql), the code can be found. To create the store procedure you just need to execute the SQL file in SQL Server Management Studio. This will create a new stored procedure under `lung_cancer_database/Programmability/Stored Procedures` called `dbo.GenerateFeatures`.
 
 The main routine is super simple and consists of 8 lines of code. All the functions associated with the script can be found in [lung_cancer_utils.py](lung_cancer/lung_cancer_utils.py).
 
@@ -83,7 +83,7 @@ To test that the GPU is actually executing the process, you can type in a termin
 
 ### Process 2: Training of Scan Features with Boosted Tree 
 
-Once the features are computed and inserted in the SQL table, we use them to train a boosted tree using LightGBM library. The code that computes this process is [sp_01_lightgbm_training_create.sql](sql/sp_01_lightgbm_training_create.sql) and generates a stored procedure called `dbo.TrainLungCancerModel`.
+Once the features are computed and inserted in the SQL table, we use them to train a boosted tree using LightGBM library. The code that computes this process is [sp_01_boosted_tree_training_create.sql](sql/sp_01_boosted_tree_training_create.sql) and generates a stored procedure called `dbo.TrainLungCancerModel`.
 
 In this case the main code occupies 4 lines of code:
 
@@ -103,7 +103,7 @@ This process takes around 1 min in a DSVM.
 
 ### Process 3: Scoring with the Trained Classifier
 
-The final process is the operationalization routine. The boosted tree can be used to compute the probability of a new patient of having cancer. The script is [sp_02_lightgbm_scoring_create.sql](sql/sp_02_lightgbm_scoring_create.sql) and generates a stored procedure called `PredictLungCancer`. This can connected to a web app via an API.
+The final process is the operationalization routine. The boosted tree can be used to compute the probability of a new patient of having cancer. The script is [sp_02_boosted_tree_scoring_create.sql](sql/sp_02_boosted_tree_scoring_create.sql) and generates a stored procedure called `PredictLungCancer`. This can connected to a web app via an API.
 
 The main code has 5 lines:
 
