@@ -34,7 +34,6 @@ cur = conn.cursor()
 
 print("Starting routine")
 
-
 patients_train = get_patients_id(TABLE_LABELS, cur)
 
 trn_x, val_x, trn_y, val_y = generate_set(TABLE_FEATURES, TABLE_LABELS, patients_train, cur)

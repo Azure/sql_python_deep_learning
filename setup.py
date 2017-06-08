@@ -5,9 +5,6 @@ setup(
     name='lung-cancer-detection-sql-python',
     version=VERSION,
     packages=['lung_cancer'],
-    url='',
-    license=LICENSE,
-    author='',
-    author_email='',
-    description=''
+    url='https://github.com/Azure/sql_python_deep_learning',
+    license=LICENSE
 )
