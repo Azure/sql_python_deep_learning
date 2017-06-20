@@ -39,26 +39,16 @@ Then, make sure that SQL python loads cntk correctly:
 You need to change the user and password in SQL Server. For that you have to execute the file `change_auth.sql` (changing the variables user and password).
 
 #### Install LightGBM
+LightGBM can be installed via `pip`:
 
-1) Clone LightGBM repo
+	pip install lightgbm
 
-		git clone https://github.com/microsoft/lightgbm
+Make sure that lightgbm is loaded correctly
 
-2) Open `./windows/LightGBM.sln` in Visual Studio
+	cd "C:\Program Files\Microsoft SQL Server\YOUR-MSSQL-SERVER-INSTANCE-FOLDER\PYTHON_SERVICES"
+	python.exe -c "import lightgbm"
 
-3) Set configuration to Release and x64 (set to DLL for building library)
-
-4) Press Ctrl+Shift+B to build.
-
-5) Install the python biddings, for that we need to execute `python setup.py install` inside the LightGBM python directory but pointing the SQL python directory.
-
-		cd C:\lightgbm\python-package\
-		"C:\Program Files\Microsoft SQL Server\YOUR-MSSQL-SERVER-INSTANCE-FOLDER\PYTHON_SERVICES\python.exe" setup.py install
-
-6) Make sure that lightgbm is loaded correctly
-
-		cd "C:\Program Files\Microsoft SQL Server\YOUR-MSSQL-SERVER-INSTANCE-FOLDER\PYTHON_SERVICES"
-		python.exe -c "import lightgbm"
+For more details in the installation, you can visit  [their home page](https://github.com/Microsoft/LightGBM/wiki/Installation-Guide).
 
 #### Install the rest of the libraries needed to run the the demo
 The next step is to install several libraries that we need to run the demo. First you need to install OpenCV:
