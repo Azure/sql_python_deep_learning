@@ -144,6 +144,12 @@ The web page can be accessed at `http://localhost:5000`.
 
 In case you want to access it from outside you have to open the port 5000 in the Azure portal (Network Interfaces/Network security group/Inbound security rules). You need to do the same in the Firewall inside the virtual machine (Windows Firewall with Advanced Security/Inbound rules). To access the web service from outside just replace `localhost` with the DNS or IP of the VM.
 
+The final web looks like this:
+
+<p align="center">
+<img src="web_app/static/img/screenshot.png" alt="web page" width="60%"/>
+</p>
+
 You can try to search a patient called Anthony or another call Ana. You can also search for patients by ID entering a number between 0 and 200 (1594 if you use the full dataset).
 
 ### Disclaimer
