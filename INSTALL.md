@@ -50,6 +50,8 @@ Make sure that lightgbm is loaded correctly
 
 For more details in the installation, you can visit  [their home page](https://github.com/Microsoft/LightGBM/wiki/Installation-Guide).
 
+**NOTE**: This demo was created with LightGBM version 0.1, specifically with the commit `ea6bc0a5ba80195fc214495ade8c4bdff532535a`. When you do `pip install` you always get the last version of LightGBM so there might be some features in this library that are deprecated. For the demo to run correctly, you can either install LightGBM version 0.1 or update the deprecated parts. We are open to contributions!
+
 #### Install the rest of the libraries needed to run the the demo
 The next step is to install several libraries that we need to run the demo. First you need to install OpenCV:
 
