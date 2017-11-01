@@ -44,11 +44,11 @@ This demo was created with LightGBM version 0.1, specifically with the commit `e
 
 The steps to install the version from the commit are the following:
 1) Clone LightGBM repo and go to the checkout:
-
-    git clone https://github.com/Microsoft/LightGBM
-    cd LightGBM
-    git checkout ea6bc0a5ba80195fc214495ade8c4bdff532535a
-
+```bash
+git clone https://github.com/Microsoft/LightGBM
+cd LightGBM
+git checkout ea6bc0a5ba80195fc214495ade8c4bdff532535a
+```
 
 2) Open `LightGBM/windows/LightGBM.sln` in Visual Studio.
 
@@ -57,14 +57,15 @@ The steps to install the version from the commit are the following:
 4) Press Ctrl+Shift+B to build.
 
 5) Install the python biddings, for that we need to execute `python setup.py install` inside the LightGBM python directory but pointing the SQL python directory.
-
-       cd C:\lightgbm\python-package\
-       "C:\Program Files\Microsoft SQL Server\YOUR-MSSQL-SERVER-INSTANCE-FOLDER\PYTHON_SERVICES\python.exe" setup.py install
-
-6) Make sure that lightgbm is loaded correctly
-
-	cd "C:\Program Files\Microsoft SQL Server\YOUR-MSSQL-SERVER-INSTANCE-FOLDER\PYTHON_SERVICES"
-	python.exe -c "import lightgbm"
+```bash
+cd C:\lightgbm\python-package\
+"C:\Program Files\Microsoft SQL Server\YOUR-MSSQL-SERVER-INSTANCE-FOLDER\PYTHON_SERVICES\python.exe" setup.py install
+```
+6) Make sure that LightGBM is loaded correctly
+```bash
+cd "C:\Program Files\Microsoft SQL Server\YOUR-MSSQL-SERVER-INSTANCE-FOLDER\PYTHON_SERVICES"
+python.exe -c "import lightgbm"
+```
 
 For more details in the installation, you can visit  [their home page](https://github.com/Microsoft/LightGBM/wiki/Installation-Guide).
 
