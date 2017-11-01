@@ -39,18 +39,36 @@ Then, make sure that SQL python loads cntk correctly:
 You need to change the user and password in SQL Server. For that you have to execute the file `change_auth.sql` (changing the variables user and password).
 
 #### Install LightGBM
-LightGBM can be installed via `pip`:
 
-	pip install lightgbm
+This demo was created with LightGBM version 0.1, specifically with the commit `ea6bc0a5ba80195fc214495ade8c4bdff532535a`. The standard way to install LightGBM is via `pip install lightgbm`. However, when you do `pip install` you always get the last version of LightGBM so there might be some features in this library that are deprecated. For the demo to run correctly, you can either install LightGBM version 0.1 or update the deprecated parts. We are open to contributions!
 
-Make sure that lightgbm is loaded correctly
+The steps to install the version from the commit are the following:
+1) Clone LightGBM repo and go to the checkout:
+
+    git clone https://github.com/Microsoft/LightGBM
+    cd LightGBM
+    git checkout ea6bc0a5ba80195fc214495ade8c4bdff532535a
+
+
+2) Open `LightGBM/windows/LightGBM.sln` in Visual Studio.
+
+3) Set configuration to Release and x64 (set to DLL for building library).
+
+4) Press Ctrl+Shift+B to build.
+
+5) Install the python biddings, for that we need to execute `python setup.py install` inside the LightGBM python directory but pointing the SQL python directory.
+
+       cd C:\lightgbm\python-package\
+       "C:\Program Files\Microsoft SQL Server\YOUR-MSSQL-SERVER-INSTANCE-FOLDER\PYTHON_SERVICES\python.exe" setup.py install
+
+6) Make sure that lightgbm is loaded correctly
 
 	cd "C:\Program Files\Microsoft SQL Server\YOUR-MSSQL-SERVER-INSTANCE-FOLDER\PYTHON_SERVICES"
 	python.exe -c "import lightgbm"
 
 For more details in the installation, you can visit  [their home page](https://github.com/Microsoft/LightGBM/wiki/Installation-Guide).
 
-**NOTE**: This demo was created with LightGBM version 0.1, specifically with the commit `ea6bc0a5ba80195fc214495ade8c4bdff532535a`. When you do `pip install` you always get the last version of LightGBM so there might be some features in this library that are deprecated. For the demo to run correctly, you can either install LightGBM version 0.1 or update the deprecated parts. We are open to contributions!
+
 
 #### Install the rest of the libraries needed to run the the demo
 The next step is to install several libraries that we need to run the demo. First you need to install OpenCV:
