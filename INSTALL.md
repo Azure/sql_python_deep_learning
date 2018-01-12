@@ -38,6 +38,8 @@ Then, make sure that SQL python loads cntk correctly:
 
 You need to change the user and password in SQL Server. For that you have to execute the file `change_auth.sql` (changing the variables user and password).
 
+*NOTE: In case you get the error `ImportError: DLL load failed`, you have to add the SQL python path to the environment variable `PATH`. To do this, go to Edit System Environment Variables, Environmnet Variables, select PATH and add `C:\Program Files\Microsoft SQL Server\YOUR-MSSQL-SERVER-INSTANCE-FOLDER\PYTHON_SERVICES` at the top of the list.*
+
 #### Install LightGBM
 
 This demo was created with LightGBM version 0.1, specifically with the commit `ea6bc0a5ba80195fc214495ade8c4bdff532535a`. The standard way to install LightGBM is via `pip install lightgbm`. However, when you do `pip install` you always get the last version of LightGBM so there might be some features in this library that are deprecated. For the demo to run correctly, you can either install LightGBM version 0.1 or update the deprecated parts. We are open to contributions!
