@@ -1,6 +1,8 @@
 ## Lung Cancer Detection Algorithm in SQL Server
 
-This document describes how to execute a transfer learning algorithm using deep learning and SQL Server in the context of lung cancer detection. We want to prove with this solution a new paradigm of computation, where the intelligence of the application is brought to the data, instead of bringing the data to the application. 
+This document describes how to execute a transfer learning algorithm using deep learning and SQL Server 2017 in the context of lung cancer detection. With this tutorial we would like to showcase one of the most exciting [new features of SQL Server 2017](https://docs.microsoft.com/en-us/sql/sql-server/what-s-new-in-sql-server-2017?view=sql-server-2017): in-database store procedures with Python.
+
+Technically, an in-database store procedure is a **Python routine executed inside the database**, so the data movement is minimized. We want to prove with this solution a new paradigm of computation, where the intelligence of the application is brought to the data, instead of bringing the data to the application. 
 
 The data we used are CT scans from the 2017 [Data Science Bowl](https://www.kaggle.com/c/data-science-bowl-2017/data). The scans are horizontal slices of the thorax and the images are black and white and of size `512x512`. The scans are grouped by patient, there are 1595 patients and each of them have a variable number of scans that goes from 100 to 500 images. The dataset is labelled per patient, not per image, this means that for each patient we have a label of having cancer or not.
 
