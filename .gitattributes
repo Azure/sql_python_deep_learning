@@ -1,0 +1,2 @@
+# To detect sql files on Github statistics
+*.sql linguist-detectable=true
